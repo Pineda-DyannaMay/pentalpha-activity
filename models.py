@@ -1,5 +1,7 @@
 import sqlite3
 
+NOTES_DB = 'notes.db'
+
 # A decorator is a function na nag execute before another function
 # So this decorator makes sure the database is created before any function call
 def create_database(func):
@@ -9,7 +11,7 @@ def create_database(func):
     # when the decorated function 'create_database' is attached
     def wrapper(*args, **kwargs):
         print("Creating database if it doesn't exist...")
-        conn = sqlite3.connect('sample.db')
+        conn = sqlite3.connect(NOTES_DB)
         cursor = conn.cursor()
         cursor.execute('CREATE TABLE IF NOT EXISTS notes '
                 + '(id INTEGER PRIMARY KEY, contents TEXT, '
@@ -24,7 +26,7 @@ def create_database(func):
 def add_note(note):
     """Function to add a note to the database."""
     print("Adding note to the database...")
-    conn = sqlite3.connect('sample.db')
+    conn = sqlite3.connect(NOTES_DB)
     cursor = conn.cursor()
     cursor.execute('INSERT INTO notes (contents) VALUES (?)', (note,))
 
@@ -45,7 +47,7 @@ def add_note(note):
 def view_notes():
     """Function to view all notes in the database."""
     print("Retrieving notes from the database...")
-    conn = sqlite3.connect('sample.db')
+    conn = sqlite3.connect(NOTES_DB)
     cursor = conn.execute('SELECT * FROM notes')
     notes = cursor.fetchall()
     conn.close()
@@ -63,7 +65,7 @@ def view_notes():
 
 @create_database
 def update_note(id, new_contents):
-    conn = sqlite3.connect('sample.db')
+    conn = sqlite3.connect(NOTES_DB)
     cursor = conn.cursor()
     success = cursor.execute('UPDATE notes SET contents = ? WHERE id = ?', (new_contents, id))
     conn.commit()
@@ -80,7 +82,7 @@ def update_note(id, new_contents):
 @create_database
 def delete_note(id):
     """ Function to delete a note from the database by ID."""
-    conn = sqlite3.connect('sample.db')
+    conn = sqlite3.connect(NOTES_DB)
     cursor = conn.cursor()
     success = cursor.execute('DELETE FROM notes WHERE id = ?', (id,))
     conn.commit()
